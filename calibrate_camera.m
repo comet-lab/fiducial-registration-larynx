@@ -12,7 +12,7 @@ arguments
     fiducial_size (1, 2) double = [5, 5];
     num_fiducials (1, 1) double = 4;
     options.ax = gca;
-    options.style = 'rect';
+    options.style = 'rectangle';
 end
 
 mm_per_pixel = [0,0];
@@ -23,49 +23,73 @@ I = imshow(img,'Parent',options.ax);
 title(sprintf("Select Fiducials"));
 width = 0;
 height = 0;
-drawn_rects = cell(4,1);
+drawn_objs = cell(4,1);
 for i = 1:num_fiducials
     while(1)
-        % Draw rectangle around fiducial
-        rect = drawrectangle('Color','magenta','Parent',options.ax,...
-                                'MarkerSize',2,'LineWidth',1.5);
-        satisfied = questdlg('Are you happy with your rectangle',...
+        switch options.style
+            % Choose between selecting the 
+            case 'points'
+                title(sprintf("Select the corners of the fiducial"));
+                point1 = drawpoint('Color','magenta','Parent',options.ax,'MarkerSize',3);
+                point2 = drawpoint('Color','magenta','Parent',options.ax,'MarkerSize',3);
+                fid_pos = [(point1.Position(1) + point2.Position(1))/2, ...
+                    (point1.Position(2) + point2.Position(2))/2];
+                fid_size = abs([point1.Position(1) - point2.Position(1), ...
+                            point1.Position(2) - point2.Position(2)]);
+                % Draw a rectangle based on the points selected
+                rect = drawrectangle('Position',[fid_pos-fid_size/2, fid_size], ...
+                    'Color', 'magenta', 'Parent', options.ax, ...
+                    'MarkerSize', 2, 'LineWidth', 1.5);
+                point1.delete; point2.delete;
+            case 'rectangle'
+                % Draw rectangle around fiducial
+                rect = drawrectangle('Color','magenta','Parent',options.ax,...
+                    'MarkerSize',2,'LineWidth',1.5);
+                fid_pos = [rect.Position(1) + rect.Position(3)/2,...
+                    rect.Position(2) + rect.Position(4)/2];
+                fid_size = [rect.Position(3), rect.Position(4)];
+        end
+        
+        % Perform Satisfaction Check on drawn elements
+        quest = sprintf("Are you happy with your %s",options.style);
+        satisfied = questdlg(quest,...
             'Satisfaction Check','Yes','No','Yes');
-        if satisfied == "Yes" 
+        if satisfied == "Yes"
             break; % User is satisfied break out of loop
         end
         rect.delete
     end
-    drawn_rects{i} = rect;
+    % Store the temporary objects into permanent objects
+    drawn_objs{i} = rect;
     % average the width and height of all the measured fiducial widths for
     % a more accurate measurement
-    width = width + (rect.Position(3) - width)/i;
-    height = height + (rect.Position(4) - height)/i;
-    % locate fiducial locations in pixels 
-    fiducial_pos(i,:) = [rect.Position(1) + rect.Position(3)/2,...
-                         rect.Position(2) + rect.Position(4)/2];
+    width = width + (fid_size(1) - width)/i;
+    height = height + (fid_size(2) - height)/i;
+    % locate fiducial locations in pixels
+    fiducial_pos(i,:) = fid_pos;
 end
 % determine mm_per_pixel value
 mm_per_pixel = [fiducial_size(1)/width, fiducial_size(2)/height];
 % Delete Fiducials
-for i = 1:size(drawn_rects,1)
-    drawn_rects{i}.delete
+for i = 1:size(drawn_objs,1)
+    drawn_objs{i}.delete
 end
 
 %% Select origin location
 title(sprintf("Select the Origin of the World Reference Frame"));
 while(1)
     point = drawpoint('Color','magenta','Parent',options.ax,...
-                            'MarkerSize',3);
+        'MarkerSize',5);
     % average the width and height of all the measured fiducial widths for
     % a more accurate measurement
     world_pos = [point.Position(1), point.Position(2)];
-    satisfied = questdlg('Are you happy with your rectangle',...
-                'Satisfaction Check','Yes','No','Yes');
+    satisfied = questdlg('Are you happy with your origin selection',...
+        'Satisfaction Check','Yes','No','Yes');
     if satisfied == "Yes"
         break;
     end
     point.delete
 end
 point.delete
+%% Save values to a mat file
 end
