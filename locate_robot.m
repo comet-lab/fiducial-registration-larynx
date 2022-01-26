@@ -1,7 +1,8 @@
 function [tip_pos, orient, base_pos] = locate_robot(img,options)
 %LOCATE_ROBOT - takes in an image and allows the user to use the image to
 %select the location of the the tip of the robot, the approach vector of 
-%the robot, and the base location of the robot all in pixels 
+%the robot, and the base location of the robot all in the camera's 
+%reference frame
 %   img - the image to observe the robot in
 %   'ax' - the axis to display the image
 %
