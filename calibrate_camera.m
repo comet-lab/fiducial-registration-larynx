@@ -25,9 +25,17 @@ width = 0;
 height = 0;
 drawn_rects = cell(4,1);
 for i = 1:num_fiducials
-    % Draw rectangle around fiducial
-    rect = drawrectangle('Color','magenta','Parent',options.ax,...
-                            'MarkerSize',2,'LineWidth',1.5);
+    while(1)
+        % Draw rectangle around fiducial
+        rect = drawrectangle('Color','magenta','Parent',options.ax,...
+                                'MarkerSize',2,'LineWidth',1.5);
+        satisfied = questdlg('Are you happy with your rectangle',...
+            'Satisfaction Check','Yes','No','Yes');
+        if satisfied == "Yes" 
+            break; % User is satisfied break out of loop
+        end
+        rect.delete
+    end
     drawn_rects{i} = rect;
     % average the width and height of all the measured fiducial widths for
     % a more accurate measurement
@@ -46,10 +54,18 @@ end
 
 %% Select origin location
 title(sprintf("Select the Origin of the World Reference Frame"));
-point = drawpoint('Color','magenta','Parent',options.ax,...
-                        'MarkerSize',2);
-% average the width and height of all the measured fiducial widths for
-% a more accurate measurement
-world_pos = [point.Position(1), point.Position(2)];
+while(1)
+    point = drawpoint('Color','magenta','Parent',options.ax,...
+                            'MarkerSize',3);
+    % average the width and height of all the measured fiducial widths for
+    % a more accurate measurement
+    world_pos = [point.Position(1), point.Position(2)];
+    satisfied = questdlg('Are you happy with your rectangle',...
+                'Satisfaction Check','Yes','No','Yes');
+    if satisfied == "Yes"
+        break;
+    end
+    point.delete
+end
 point.delete
 end
