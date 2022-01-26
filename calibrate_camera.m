@@ -37,12 +37,11 @@ for i = 1:num_fiducials
                 title(sprintf("Select the corners of the fiducial"));
                 point1 = drawpoint('Color','magenta','Parent',options.ax,'MarkerSize',3);
                 point2 = drawpoint('Color','magenta','Parent',options.ax,'MarkerSize',3);
-                fid_pos = [(point1.Position(1) + point2.Position(1))/2, ...
-                    (point1.Position(2) + point2.Position(2))/2];
                 fid_size = abs([point1.Position(1) - point2.Position(1), ...
                             point1.Position(2) - point2.Position(2)]);
                 % Draw a rectangle based on the points selected
-                rect = drawrectangle('Position',[fid_pos-fid_size/2, fid_size], ...
+                rect = drawrectangle('Position',[point1.Position(1), ...
+                    point1.Position(2), fid_size], ...
                     'Color', 'magenta', 'Parent', options.ax, ...
                     'MarkerSize', 2, 'LineWidth', 1.5);
                 point1.delete; point2.delete;
@@ -50,9 +49,6 @@ for i = 1:num_fiducials
                 % Draw rectangle around fiducial
                 rect = drawrectangle('Color','magenta','Parent',options.ax,...
                     'MarkerSize',2,'LineWidth',1.5);
-                fid_pos = [rect.Position(1) + rect.Position(3)/2,...
-                    rect.Position(2) + rect.Position(4)/2];
-                fid_size = [rect.Position(3), rect.Position(4)];
         end
         
         % Perform Satisfaction Check on drawn elements
@@ -68,10 +64,11 @@ for i = 1:num_fiducials
     drawn_objs{i} = rect;
     % average the width and height of all the measured fiducial widths for
     % a more accurate measurement
-    width = width + (fid_size(1) - width)/i;
-    height = height + (fid_size(2) - height)/i;
+    width = width + (rect.Position(3) - width)/i;
+    height = height + (rect.Position(4) - height)/i;
     % locate fiducial locations in pixels
-    fiducial_pos(i,:) = fid_pos;
+    fiducial_pos(i,:) = [rect.Position(1) + rect.Position(3)/2,...
+                    rect.Position(2) + rect.Position(4)/2];
 end
 % determine mm_per_pixel value
 mm_per_pixel = [fiducial_size(1)/width, fiducial_size(2)/height];
