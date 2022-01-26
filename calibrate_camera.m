@@ -17,7 +17,7 @@ arguments
     num_fiducials (1, 1) double = 4;
     options.ax = gca;
     options.style = 'rectangle';
-    options.save_loc = 'fiducials.mat'
+    options.save_loc = 'fiducial_info.mat'
 end
 
 mm_per_pixel = [0,0];
