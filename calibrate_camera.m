@@ -7,12 +7,17 @@ function [mm_per_pixel, world_pos, fiducial_pos] = calibrate_camera(img, fiducia
 %   img - the image the select fiducial locations
 %   fiducial_size - [n x 2] set of known fiducial sizes as [width, height]
 %   num_fiducials - [1 x 1] the number of fiducials to look at
+%   'ax' - the axis to display the image
+%   'style' - the type of method to analyze the fiducials (points,
+%   rectangle)
+%   'save_loc' - the file name of the mat file
 arguments
     img double
     fiducial_size (1, 2) double = [5, 5];
     num_fiducials (1, 1) double = 4;
     options.ax = gca;
     options.style = 'rectangle';
+    options.save_loc = 'fiducials.mat'
 end
 
 mm_per_pixel = [0,0];
@@ -92,4 +97,5 @@ while(1)
 end
 point.delete
 %% Save values to a mat file
+save(options.save_loc,'mm_per_pixel','world_pos','fiducial_pos')
 end
