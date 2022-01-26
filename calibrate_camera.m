@@ -95,4 +95,5 @@ end
 point.delete
 %% Save values to a mat file
 save(options.save_loc,'mm_per_pixel','world_pos','fiducial_pos')
+close all
 end
