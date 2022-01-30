@@ -1,4 +1,5 @@
-function [mm_per_pixel, world_pos, fiducial_pos] = calibrate_camera(img, fiducial_size, num_fiducials, options)
+function [mm_per_pixel, fiducial_pos, Twinp] =...
+    calibrate_camera(img, fiducial_size, num_fiducials, options)
 %CALIBRATE_CAMERA - takes in an image and the width and height of the
 %fiducials. The script will ask you to put a box around each fiducial, and
 %mark the origin of your world reference frame. It will return the pixel to
@@ -16,8 +17,9 @@ arguments
     fiducial_size (1, 2) double = [5, 5];
     num_fiducials (1, 1) double = 4;
     options.ax = gca;
-    options.style = 'rectangle';
+    options.style = 'points';
     options.save_loc = 'fiducial_info.mat'
+    options.Rcinw = eye(3,3);
 end
 
 mm_per_pixel = [0,0];
@@ -48,7 +50,7 @@ for i = 1:num_fiducials
             case 'rectangle'
                 % Draw rectangle around fiducial
                 rect = drawrectangle('Color','magenta','Parent',options.ax,...
-                    'MarkerSize',2,'LineWidth',1.5);
+                    'MarkerSize',2,'LineWidth',1.5,'Rotatable',true);
         end
         
         % Perform Satisfaction Check on drawn elements
@@ -84,7 +86,7 @@ while(1)
         'MarkerSize',5);
     % average the width and height of all the measured fiducial widths for
     % a more accurate measurement
-    world_pos = [point.Position(1), point.Position(2)];
+    world_pos = [point.Position(1); point.Position(2)];
     satisfied = questdlg('Are you happy with your origin selection',...
         'Satisfaction Check','Yes','No','Yes');
     if satisfied == "Yes"
@@ -92,6 +94,7 @@ while(1)
     end
     point.delete
 end
+Twinp = [options.Rcinw [world_pos; 0]; zeros(1,3) 1];
 point.delete
 %% Save values to a mat file
 save(options.save_loc,'mm_per_pixel','world_pos','fiducial_pos')
