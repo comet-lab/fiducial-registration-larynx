@@ -19,7 +19,7 @@ arguments
     options.ax = gca;
     options.style = 'points';
     options.save_loc = 'fiducial_info.mat'
-    options.Rcinw = eye(3,3);
+    options.World_Rotation = eye(3,3);
 end
 
 mm_per_pixel = [0,0];
@@ -94,7 +94,7 @@ while(1)
     end
     point.delete
 end
-Twinp = [options.Rcinw [world_pos; 0]; zeros(1,3) 1];
+Twinp = [options.World_Rotation [world_pos; 0]; zeros(1,3) 1];
 point.delete
 %% Save values to a mat file
 save(options.save_loc,'mm_per_pixel','world_pos','fiducial_pos')
