@@ -68,7 +68,7 @@ while(1)
 end
 orient = [-diff(2), diff(1)]; % [delta x, delta y] in pixels of the approach vector
 orient = orient./norm(orient);
-theta = atan2(orient(2),orient(1));
+theta = rad2deg(atan2(orient(2),orient(1)));
 
 Ttip_in_c = [rotz(theta), [tip_pos'.*options.mm_per_pix';0]; 0 0 0 1];
 Ttip_in_c = Ttip_in_c*[options.Robot_rotation zeros(3,1);zeros(1,3) 1];
