@@ -44,7 +44,11 @@ else
         zeros(1,3), 1];
 end
 %% Locate the robot tip
-title(sprintf("Select the tip of the robot, then the tip"));
+[zoomed_img, start_rect] = ...
+    SelectRegion(img,'axis',options.ax,...
+    'title',"Zoom in on the tip of the robot");
+I = imshow(zoomed_img,'Parent',options.ax);
+title(sprintf("Select the tip of the robot"));
 while(1)
     tip_point = drawpoint('Color','magenta','Parent',options.ax,'MarkerSize',3);
     quest = sprintf("Are you happy with your point selection?");
@@ -55,7 +59,7 @@ while(1)
     end
     tip_point.delete
 end
-tip_pos = tip_point.Position;
+tip_pos = tip_point.Position + start_rect(1:2);
 %% Find robot's approach vector
 title(sprintf("Draw a line across the tip of the robot"));
 while(1)
