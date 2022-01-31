@@ -3,8 +3,9 @@ function [mm_per_pixel, fiducial_pos, Twinp] =...
 %CALIBRATE_CAMERA - takes in an image and the width and height of the
 %fiducials. The script will ask you to put a box around each fiducial, and
 %mark the origin of your world reference frame. It will return the pixel to
-%millimeter conversion factor as well as the pixel location of the world
-%frame and fiducials.
+%millimeter conversion factor, the world frame with respect to
+%the camera frame, and the fiducial position with respect to the camera in
+%mm.
 %   img - the image the select fiducial locations
 %   fiducial_size - [n x 2] set of known fiducial sizes as [width, height]
 %   num_fiducials - [1 x 1] the number of fiducials to look at
@@ -12,6 +13,8 @@ function [mm_per_pixel, fiducial_pos, Twinp] =...
 %   'style' - the type of method to analyze the fiducials (points,
 %   rectangle)
 %   'save_loc' - the file name of the mat file
+%   'World_Rotation' - the rotation matrix between the world reference
+%   frame and the camera reference frame
 arguments
     img double
     fiducial_size (1, 2) double = [5, 5];
@@ -74,6 +77,7 @@ for i = 1:num_fiducials
 end
 % determine mm_per_pixel value
 mm_per_pixel = [fiducial_size(1)/width, fiducial_size(2)/height];
+fiducial_pos = fiducial_pos.*mm_per_pixel; % fiducials in camera frame
 % Delete Fiducials
 for i = 1:size(drawn_objs,1)
     drawn_objs{i}.delete
@@ -94,7 +98,8 @@ while(1)
     end
     point.delete
 end
-Twinp = [options.World_Rotation [world_pos; 0]; zeros(1,3) 1];
+% world frame in camera frame
+Twinp = [options.World_Rotation [world_pos.*mm_per_pixel'; 0]; zeros(1,3) 1];
 point.delete
 %% Save values to a mat file
 save(options.save_loc,'mm_per_pixel','world_pos','fiducial_pos')
