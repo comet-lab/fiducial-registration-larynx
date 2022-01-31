@@ -3,7 +3,7 @@ function save_mat = AnalyzeImages(path,calibrationFile,options)
 %and goes through each image one by one.
 %
 %   To run:
-%       theta_mat = AnalyzeFolder("C:\users\nickp\pictures\",false,5)
+%       AnalyzeImages("Test_images\","fiducial_info.mat")
 
 %   calibrationFile - Optional Argument determines where to load the
 %   calibration info from
