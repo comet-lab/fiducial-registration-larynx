@@ -79,7 +79,7 @@ save_mat = cell2mat(results_array); % Conver the cell array to a matrix for savi
 % Overwrite current csv file
 try
     save(options.SaveLocation,'results_array')
-    writematrix(save_mat,"test.csv");
+    writematrix(save_mat,"Results.csv");
 catch
     sprintf("failed save")
 end
