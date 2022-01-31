@@ -26,6 +26,10 @@ end
 I = imshow(img,'Parent',options.ax);
 %% Locate the robot base
 if options.base
+    [zoomed_img, start_rect] = ...
+        SelectRegion(img,'axis',options.ax,...
+        'title',"Zoom in on the base of the robot");
+    I = imshow(zoomed_img,'Parent',options.ax);
     title(sprintf("Select the base of the robot"));
     while(1)
         base_point = drawpoint('Color','magenta','Parent',options.ax,'MarkerSize',3);
@@ -37,7 +41,8 @@ if options.base
         end
         base_point.delete
     end
-    Tbase_in_c = [options.Robot_rotation, [base_point.Position'.*options.mm_per_pix';0];...
+    Tbase_in_c = [options.Robot_rotation, ...
+        [(base_point.Position' + start_rect(1:2)').*options.mm_per_pix';0];...
         zeros(1,3), 1];
 else
     Tbase_in_c = [options.Robot_rotation, zeros(3,1);...
