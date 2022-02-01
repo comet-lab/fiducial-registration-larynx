@@ -26,7 +26,7 @@ results = AnalyzeImages("Test_images\","fiducial_info.mat")
 known_fiducial_pos = [20 20; 70 35; 160 25; 50 100; 105 85; 140 110];
 known_fiducial_pos = known_fiducial_pos + [2.5 2.5];
 
-robot_0_pose = [rotz(0) [30+cosd(0)*16 + sind(0)*1.1; 65+sind(0)*16 + cosd(0)*1.1; 0]; zeros(1,3) 1]*[rotz(0)*rotx(0) zeros(3,1); zeros(1,3) 1];
+robot_0_pose = [rotz(0) [30+cosd(0)*16 + sind(0)*1.1; 65+sind(0)*16 + cosd(0)*1.1; 0]; zeros(1,3) 1]*[rotz(90)*rotx(90) zeros(3,1); zeros(1,3) 1];
 robot_15_pose = [rotz(15) [60+cosd(15)*16 + sind(15)*1.1; 65+sind(15)*16 + cosd(15)*1.1; 0]; zeros(1,3) 1]*[rotz(90)*rotx(90) zeros(3,1); zeros(1,3) 1];
 robot_90_pose = [rotz(90) [90+cosd(90)*16 + sind(90)*1.1; 65+sind(90)*16 + cosd(90)*1.1; 0]; zeros(1,3) 1]*[rotz(90)*rotx(90) zeros(3,1); zeros(1,3) 1];
 
