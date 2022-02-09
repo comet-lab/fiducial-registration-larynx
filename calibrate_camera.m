@@ -1,4 +1,4 @@
-function [mm_per_pixel, fiducial_pos, Twinp] =...
+function [mm_per_pixel, fiducial_pos, Twinc] =...
     calibrate_camera(img, fiducial_size, num_fiducials, options)
 %CALIBRATE_CAMERA - takes in an image and the width and height of the
 %fiducials. The script will ask you to put a box around each fiducial, and
@@ -99,7 +99,7 @@ while(1)
     point.delete
 end
 % world frame in camera frame
-Twinp = [options.World_Rotation [world_pos.*mm_per_pixel'; 0]; zeros(1,3) 1];
+Twinc = [options.World_Rotation [world_pos.*mm_per_pixel'; 0]; zeros(1,3) 1];
 point.delete
 %% Save values to a mat file
 save(options.save_loc,'mm_per_pixel','world_pos','fiducial_pos')
