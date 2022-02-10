@@ -28,7 +28,7 @@ end
 mm_per_pixel = [0,0];
 world_pos = zeros(1,2);
 fiducial_pos = zeros(num_fiducials, 2);
-I = imshow(img,'Parent',options.ax);
+I = imshow(uint8(img),'Parent',options.ax);
 %% Select fiducials with boxes
 title(sprintf("Select Fiducials"));
 width = 0;
@@ -102,6 +102,6 @@ end
 Twinc = [options.World_Rotation [world_pos.*mm_per_pixel'; 0]; zeros(1,3) 1];
 point.delete
 %% Save values to a mat file
-save(options.save_loc,'mm_per_pixel','world_pos','fiducial_pos')
+save(options.save_loc,'mm_per_pixel','Twinc','fiducial_pos')
 close all
 end
