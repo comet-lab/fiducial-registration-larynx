@@ -16,7 +16,7 @@ function [mm_per_pixel, fiducial_pos, Twinc] =...
 %   'World_Rotation' - the rotation matrix between the world reference
 %   frame and the camera reference frame
 arguments
-    img double
+    img (:,:,:) uint8
     fiducial_size (1, 2) double = [5, 5];
     num_fiducials (1, 1) double = 4;
     options.ax = gca;
@@ -28,7 +28,7 @@ end
 mm_per_pixel = [0,0];
 world_pos = zeros(1,2);
 fiducial_pos = zeros(num_fiducials, 2);
-I = imshow(uint8(img),'Parent',options.ax);
+I = imshow(img,'Parent',options.ax);
 %% Select fiducials with boxes
 title(sprintf("Select Fiducials"));
 width = 0;
