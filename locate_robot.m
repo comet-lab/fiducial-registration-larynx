@@ -16,7 +16,7 @@ function [Ttip_in_c, Tbase_in_c] = locate_robot(img,options)
 %*Note: the y-axis for pixels is positive moving from top to bottom on the
 %image and the x-axis for pixels is positive moving left to right
 arguments
-    img double
+    img (:,:,:) uint8
     options.ax = gca
     options.Robot_rotation double = eye(3,3);
     options.mm_per_pix double = 1;

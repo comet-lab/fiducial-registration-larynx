@@ -48,7 +48,7 @@ if ~options.SingleFile
             break;
         end
     end
-    results_array = cell(numOfFiles-startIndex + 1, 1);
+    fiducial_array = cell(numOfFiles-startIndex + 1, 1);
     transformation_mat = zeros(4,4,numOfFiles-startIndex + 1);
     for i = startIndex:numOfFiles
          % For loop through the files in the directory and analyze each file
@@ -59,7 +59,7 @@ if ~options.SingleFile
             Ttip_in_c = locate_robot(img,'Robot_rotation',...
                 options.Robot_Rotation,'mm_per_pix',mm_per_pixel);
             fiducial_pos_r = inv(Ttip_in_c)*[fiducial_pos';zeros(1,4);ones(1,4)];
-            results_array{i-startIndex + 1} = fiducial_pos_r(1:3,:);
+            fiducial_array{i-startIndex + 1} = fiducial_pos_r(1:3,:);
             transformation_mat(:,:,i-startIndex + 1) = inv(Twinc)*Ttip_in_c;
         catch e
             errorMessage = sprintf('Error in function %s() at line %d.\n\nError Message:\n%s', ...
@@ -75,16 +75,17 @@ else
     Ttip_in_c = locate_robot(img,'Robot_rotation',...
         options.Robot_Rotation,'mm_per_pix',mm_per_pixel);
     fiducial_pos_r = inv(Ttip_in_c)*[fiducial_pos';zeros(1,4);ones(1,4)];
-    results_array{i} = fiducial_pos_r(1:3,:);
+    fiducial_array{i} = fiducial_pos_r(1:3,:);
     transformation_mat(:,:,i) = inv(Twinc)*Ttip_in_c;
 end
 
-fiducial_mat = cell2mat(results_array); % Conver the cell array to a matrix for saving
+fiducial_mat = cell2mat(fiducial_array); % Conver the cell array to a matrix for saving
 % Overwrite current csv file
 try
-    save(options.SaveLocation,'results_array')
+    save(options.SaveLocation,'fiducial_array')
     writematrix(fiducial_mat,"Results.csv");
 catch
     sprintf("failed save")
 end
-
+close gcf
+end
