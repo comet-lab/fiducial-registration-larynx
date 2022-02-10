@@ -1,4 +1,4 @@
-function save_mat = AnalyzeImages(path,calibrationFile,options)
+function [fiducial_mat, transformation_mat] = AnalyzeImages(path,calibrationFile,options)
 %ANALYZEFOLDER Takes in a path to a folder which contains images to analyze
 %and goes through each image one by one.
 %
@@ -7,7 +7,8 @@ function save_mat = AnalyzeImages(path,calibrationFile,options)
 
 %   calibrationFile - Optional Argument determines where to load the
 %   calibration info from
-%   'Axis' - Optional Argument which is the axis to display the image one
+%   'Axis' - Optional Argument which is the axis to display the image
+%   onemot
 %   'RelativePath' - Optional Argument sets whether the passed in path is
 %   relative. Default value is true.
 %   'SaveLocation' - Optional Argument which determines where to save the
@@ -28,7 +29,7 @@ arguments
 end
 %*********************************************
 
-load(calibrationFile,'mm_per_pixel','world_pos','fiducial_pos');
+load(calibrationFile,'mm_per_pixel','Twinc','fiducial_pos');
 if options.RelativePath
     path = pwd + "\" + path;
     options.SaveLocation = pwd + "\" + options.SaveLocation;
@@ -48,6 +49,7 @@ if ~options.SingleFile
         end
     end
     results_array = cell(numOfFiles-startIndex + 1, 1);
+    transformation_mat = zeros(4,4,numOfFiles-startIndex + 1);
     for i = startIndex:numOfFiles
          % For loop through the files in the directory and analyze each file
         try
@@ -58,6 +60,7 @@ if ~options.SingleFile
                 options.Robot_Rotation,'mm_per_pix',mm_per_pixel);
             fiducial_pos_r = inv(Ttip_in_c)*[fiducial_pos';zeros(1,4);ones(1,4)];
             results_array{i-startIndex + 1} = fiducial_pos_r(1:3,:);
+            transformation_mat(:,:,i-startIndex + 1) = inv(Twinc)*Ttip_in_c;
         catch e
             errorMessage = sprintf('Error in function %s() at line %d.\n\nError Message:\n%s', ...
                 e.stack(1).name, e.stack(1).line, e.message);
@@ -73,13 +76,14 @@ else
         options.Robot_Rotation,'mm_per_pix',mm_per_pixel);
     fiducial_pos_r = inv(Ttip_in_c)*[fiducial_pos';zeros(1,4);ones(1,4)];
     results_array{i} = fiducial_pos_r(1:3,:);
+    transformation_mat(:,:,i) = inv(Twinc)*Ttip_in_c;
 end
 
-save_mat = cell2mat(results_array); % Conver the cell array to a matrix for saving
+fiducial_mat = cell2mat(results_array); % Conver the cell array to a matrix for saving
 % Overwrite current csv file
 try
     save(options.SaveLocation,'results_array')
-    writematrix(save_mat,"Results.csv");
+    writematrix(fiducial_mat,"Results.csv");
 catch
     sprintf("failed save")
 end
