@@ -21,6 +21,8 @@ arguments
     options.Robot_rotation double = eye(3,3);
     options.mm_per_pix double = 1;
     options.base (1,1) logical = false
+    options.ApproachVector (1,:) char...
+        {ismember(options.ApproachVector,{'tangent','normal'})} = 'normal'
 end
 
 I = imshow(img,'Parent',options.ax);
@@ -66,14 +68,24 @@ while(1)
 end
 tip_pos = tip_point.Position;
 %% Find robot's approach vector
-title(sprintf("Draw a line across the tip of the robot"));
+
 while(1)
-    tip_line = drawline('Color','magenta','Parent',options.ax,'MarkerSize',3);
-    diff = [tip_line.Position(2,1) - tip_line.Position(1,1),...
-        tip_line.Position(2,2) - tip_line.Position(1,2)];
-    end_point = tip_pos(1,:) + [-diff(2), diff(1)];
-    approach_vec = drawline('Position', [tip_pos(1,:); end_point],...
-        'Color','magenta','Parent',options.ax,'MarkerSize',3);
+    switch options.ApproachVector
+        case 'normal'
+            title(sprintf("Draw a line across the tip of the robot"));
+            tip_line = drawline('Color','magenta','Parent',options.ax,'MarkerSize',3);
+            diff = [tip_line.Position(2,1) - tip_line.Position(1,1),...
+                tip_line.Position(2,2) - tip_line.Position(1,2)];
+            diff = [-diff(2), diff(1)]; % want normal vector
+            end_point = tip_pos(1,:) + diff;
+            approach_vec = drawline('Position', [tip_pos(1,:); end_point],...
+                'Color','magenta','Parent',options.ax,'MarkerSize',3);
+        case 'tangent'
+            title(sprintf("Draw a line along the laser fiber"));
+            tip_line = drawline('Color','magenta','Parent',options.ax,'MarkerSize',3);
+            diff = [tip_line.Position(2,1) - tip_line.Position(1,1),...
+                tip_line.Position(2,2) - tip_line.Position(1,2)];
+    end
     quest = sprintf("Are you happy with your line?");
     satisfied = questdlg(quest,...
         'Satisfaction Check','Yes','No','Yes');
