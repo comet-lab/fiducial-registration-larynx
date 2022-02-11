@@ -21,7 +21,11 @@ img = imread("Test_images\Fiducial_example.png");
 [mm_per_pixel, fiducial_pos, Twinp] = calibrate_camera(img,'Style',...
     'rectangle','World_Rotation', [1 0 0; 0 -1 0; 0 0 -1]);
 
-[fid_results, T_results] = AnalyzeImages("Test_images\","fiducial_info.mat")
+[fid_results, T_results] = AnalyzeImages("Test_images\",'Recalibrate',true,'ApproachVector','tangent')
+
+load('mesh_fiducials.mat','fiducial_in_mesh');
+%%
+ToCTPoints(fiducial_in_mesh)
 %% TESTING
 known_fiducial_pos = [20 20; 70 35; 160 25; 50 100; 105 85; 140 110];
 known_fiducial_pos = known_fiducial_pos + [2.5 2.5];

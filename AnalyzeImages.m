@@ -32,7 +32,7 @@ arguments
 end
 %*********************************************
 
-load(calibrationFile,'mm_per_pixel','Twinc','fiducial_pos');
+load(calibrationFile,'mm_per_pixel','Twinc','fiducial_in_c');
 if options.RelativePath
     path = pwd + "\" + path;
     options.SaveLocation = pwd + "\" + options.SaveLocation;
@@ -57,14 +57,14 @@ if ~options.SingleFile
         % For loop through the files in the directory and analyze each file
         [fiducial_array{i-startIndex + 1}, transformation_mat(:,:,i-startIndex + 1)] = ...
             AnalyzeSingleFile(path+filesInDir(i).name,...
-            mm_per_pixel, fiducial_pos, Twinc, options.Recalibrate,...
+            mm_per_pixel, fiducial_in_c, Twinc, options.Recalibrate,...
             options.Robot_Rotation, options.ApproachVector);
     end
 else
     % We are only analyzing a single file
     [fiducial_array, transformation_mat] = ...
             AnalyzeSingleFile(path,...
-            mm_per_pixel, fiducial_pos, Twinc, options.Recalibrate,...
+            mm_per_pixel, fiducial_in_c, Twinc, options.Recalibrate,...
             options.Robot_Rotation, options.ApproachVector);
 end
 
@@ -79,7 +79,7 @@ close gcf
 end
 %% Helper Function
 function [fiducial_mat, transformation_mat] = ...
-    AnalyzeSingleFile(path, mm_per_pixel, fiducial_pos, Twinc,...
+    AnalyzeSingleFile(path, mm_per_pixel, fiducial_in_c, Twinc,...
     recalibrate, robot_rotation, approach_vector)
 fiducial_mat = [];
 transformation_mat = zeros(4,4);
@@ -88,13 +88,13 @@ try
     % doesn't want to lose their progress.
     img = imread(path);
     if recalibrate
-        [mm_per_pixel, fiducial_pos, Twinc] = calibrate_camera(img,'Style',...
+        [mm_per_pixel, fiducial_in_c, Twinc] = calibrate_camera(img,'Style',...
             'rectangle','World_Rotation', [1 0 0; 0 -1 0; 0 0 -1]);
     end
     Ttip_in_c = locate_robot(img,'Robot_rotation',...
         robot_rotation,'mm_per_pix',mm_per_pixel,...
         'ApproachVector', approach_vector);
-    fiducial_pos_r = inv(Ttip_in_c)*[fiducial_pos';zeros(1,4);ones(1,4)];
+    fiducial_pos_r = inv(Ttip_in_c)*[fiducial_in_c';zeros(1,4);ones(1,4)];
     fiducial_mat = fiducial_pos_r(1:3,:);
     transformation_mat = inv(Twinc)*Ttip_in_c;
 catch e

@@ -1,4 +1,4 @@
-function [mm_per_pixel, fiducial_pos, Twinc] =...
+function [mm_per_pixel, fiducial_in_c, Twinc] =...
     calibrate_camera(img, fiducial_size, num_fiducials, options)
 %CALIBRATE_CAMERA - takes in an image and the width and height of the
 %fiducials. The script will ask you to put a box around each fiducial, and
@@ -27,7 +27,7 @@ end
 
 mm_per_pixel = [0,0];
 world_pos = zeros(1,2);
-fiducial_pos = zeros(num_fiducials, 2);
+fiducial_in_c = zeros(num_fiducials, 2);
 I = imshow(img,'Parent',options.ax);
 %% Select fiducials with boxes
 title(sprintf("Select Fiducials"));
@@ -72,12 +72,12 @@ for i = 1:num_fiducials
     width = width + (rect.Position(3) - width)/i;
     height = height + (rect.Position(4) - height)/i;
     % locate fiducial locations in pixels
-    fiducial_pos(i,:) = [rect.Position(1) + rect.Position(3)/2,...
+    fiducial_in_c(i,:) = [rect.Position(1) + rect.Position(3)/2,...
                     rect.Position(2) + rect.Position(4)/2];
 end
 % determine mm_per_pixel value
 mm_per_pixel = [fiducial_size(1)/width, fiducial_size(2)/height];
-fiducial_pos = fiducial_pos.*mm_per_pixel; % fiducials in camera frame
+fiducial_in_c = fiducial_in_c.*mm_per_pixel; % fiducials in camera frame
 % Delete Fiducials
 for i = 1:size(drawn_objs,1)
     drawn_objs{i}.delete
@@ -102,6 +102,6 @@ end
 Twinc = [options.World_Rotation [world_pos.*mm_per_pixel'; 0]; zeros(1,3) 1];
 point.delete
 %% Save values to a mat file
-save(options.save_loc,'mm_per_pixel','Twinc','fiducial_pos')
+save(options.save_loc,'mm_per_pixel','Twinc','fiducial_in_c')
 close all
 end
