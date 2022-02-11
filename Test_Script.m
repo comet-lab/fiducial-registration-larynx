@@ -6,7 +6,7 @@ img = imread("Real_test_images\real_world_test.png");
 %%
 
 [Tr_in_c, Tb_in_c] = locate_robot(img,'Robot_rotation',rotz(90)*rotx(90),...
-    'mm_per_pix',mm_per_pixel);
+    'mm_per_pix',mm_per_pixel,'ApproachVector','tangent');
 
 %% Get Fiducials in world frame
 % fiducial_pos_c = (fiducial_pos.*mm_per_pixel)';
