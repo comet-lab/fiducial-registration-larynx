@@ -72,7 +72,6 @@ fiducial_mat = cell2mat(fiducial_array); % Conver the cell array to a matrix for
 % Overwrite current csv file
 try
     save(options.SaveLocation,'fiducial_array','transformation_mat')
-    writematrix(fiducial_mat,"Results.csv");
 catch
     sprintf("failed save")
 end
