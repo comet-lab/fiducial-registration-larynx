@@ -21,7 +21,7 @@ arguments
     num_fiducials (1, 1) double = 4;
     options.ax = gca;
     options.style = 'points';
-    options.save_loc = 'fiducial_info.mat'
+    options.save_loc = 'calibration_info.mat'
     options.World_Rotation = eye(3,3);
 end
 
