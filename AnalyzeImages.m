@@ -22,10 +22,13 @@ arguments
     calibrationFile (1,1) string = "fiducial_info.mat"
     options.axis = gca
     options.RelativePath logical = true
-    options.SaveLocation string = "testOutput.mat"
+    options.SaveLocation string = "robot_localization.mat"
     options.SingleFile logical = false
     options.StartFile string = "";
     options.Robot_Rotation (3,3) double = rotz(90)*rotx(90)
+    options.ApproachVector (1,:) char...
+        {ismember(options.ApproachVector,{'tangent','normal'})} = 'normal'
+    options.Recalibrate (1,1) logical = false
 end
 %*********************************************
 
@@ -51,41 +54,55 @@ if ~options.SingleFile
     fiducial_array = cell(numOfFiles-startIndex + 1, 1);
     transformation_mat = zeros(4,4,numOfFiles-startIndex + 1);
     for i = startIndex:numOfFiles
-         % For loop through the files in the directory and analyze each file
-        try
-            % This is in case someone decides the are done analyzing images but
-            % doesn't want to lose their progress.
-            img = imread(path+filesInDir(i).name);
-            Ttip_in_c = locate_robot(img,'Robot_rotation',...
-                options.Robot_Rotation,'mm_per_pix',mm_per_pixel);
-            fiducial_pos_r = inv(Ttip_in_c)*[fiducial_pos';zeros(1,4);ones(1,4)];
-            fiducial_array{i-startIndex + 1} = fiducial_pos_r(1:3,:);
-            transformation_mat(:,:,i-startIndex + 1) = inv(Twinc)*Ttip_in_c;
-        catch e
-            errorMessage = sprintf('Error in function %s() at line %d.\n\nError Message:\n%s', ...
-                e.stack(1).name, e.stack(1).line, e.message);
-            fprintf(2, '%s\n', errorMessage);
-            fprintf(2,'The identifier was:\n%s\n',e.identifier);
-%             break;
-        end
+        % For loop through the files in the directory and analyze each file
+        [fiducial_array{i-startIndex + 1}, transformation_mat(:,:,i-startIndex + 1)] = ...
+            AnalyzeSingleFile(path+filesInDir(i).name,...
+            mm_per_pixel, fiducial_pos, Twinc, options.Recalibrate,...
+            options.Robot_Rotation, options.ApproachVector);
     end
 else
     % We are only analyzing a single file
-    img = imread(path);
-    Ttip_in_c = locate_robot(img,'Robot_rotation',...
-        options.Robot_Rotation,'mm_per_pix',mm_per_pixel);
-    fiducial_pos_r = inv(Ttip_in_c)*[fiducial_pos';zeros(1,4);ones(1,4)];
-    fiducial_array{i} = fiducial_pos_r(1:3,:);
-    transformation_mat(:,:,i) = inv(Twinc)*Ttip_in_c;
+    [fiducial_array, transformation_mat] = ...
+            AnalyzeSingleFile(path,...
+            mm_per_pixel, fiducial_pos, Twinc, options.Recalibrate,...
+            options.Robot_Rotation, options.ApproachVector);
 end
 
 fiducial_mat = cell2mat(fiducial_array); % Conver the cell array to a matrix for saving
 % Overwrite current csv file
 try
-    save(options.SaveLocation,'fiducial_array')
+    save(options.SaveLocation,'fiducial_array','transformation_mat')
     writematrix(fiducial_mat,"Results.csv");
 catch
     sprintf("failed save")
 end
 close gcf
+end
+%% Helper Function
+function [fiducial_mat, transformation_mat] = ...
+    AnalyzeSingleFile(path, mm_per_pixel, fiducial_pos, Twinc,...
+    recalibrate, robot_rotation, approach_vector)
+fiducial_mat = [];
+transformation_mat = zeros(4,4);
+try
+    % This is in case someone decides the are done analyzing images but
+    % doesn't want to lose their progress.
+    img = imread(path);
+    if recalibrate
+        [mm_per_pixel, fiducial_pos, Twinc] = calibrate_camera(img,'Style',...
+            'rectangle','World_Rotation', [1 0 0; 0 -1 0; 0 0 -1]);
+    end
+    Ttip_in_c = locate_robot(img,'Robot_rotation',...
+        robot_rotation,'mm_per_pix',mm_per_pixel,...
+        'ApproachVector', approach_vector);
+    fiducial_pos_r = inv(Ttip_in_c)*[fiducial_pos';zeros(1,4);ones(1,4)];
+    fiducial_mat = fiducial_pos_r(1:3,:);
+    transformation_mat = inv(Twinc)*Ttip_in_c;
+catch e
+    errorMessage = sprintf('Error in function %s() at line %d.\n\nError Message:\n%s', ...
+        e.stack(1).name, e.stack(1).line, e.message);
+    fprintf(2, '%s\n', errorMessage);
+    fprintf(2,'The identifier was:\n%s\n',e.identifier);
+%             break;
+end
 end
