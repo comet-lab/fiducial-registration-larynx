@@ -19,7 +19,7 @@ function [fiducial_mat, transformation_mat] = AnalyzeImages(path,calibrationFile
 %****** INPUT PARSING *********************
 arguments
     path (1,1) string
-    calibrationFile (1,1) string = "fiducial_info.mat"
+    calibrationFile (1,1) string = "calibration_info.mat"
     options.axis = gca
     options.RelativePath logical = true
     options.SaveLocation string = "robot_localization.mat"
