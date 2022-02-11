@@ -95,7 +95,7 @@ while(1)
     tip_line.delete
     approach_vec.delete
 end
-orient = [-diff(2), diff(1)]; % [delta x, delta y] in pixels of the approach vector
+orient = [diff(1), diff(2)]; % [delta x, delta y] in pixels of the approach vector
 orient = orient./norm(orient);
 theta = rad2deg(atan2(orient(2),orient(1)));
 
