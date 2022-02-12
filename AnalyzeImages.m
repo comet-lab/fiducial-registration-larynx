@@ -1,4 +1,4 @@
-function [fiducial_mat, transformation_mat] = AnalyzeImages(path,calibrationFile,options)
+function [fiducial_in_r_mat, Trinw] = AnalyzeImages(path,calibrationFile,options)
 %ANALYZEFOLDER Takes in a path to a folder which contains images to analyze
 %and goes through each image one by one.
 %
@@ -55,38 +55,38 @@ if ~options.SingleFile
             break;
         end
     end
-    fiducial_array = cell(numOfFiles-startIndex + 1, 1);
-    transformation_mat = zeros(4,4,numOfFiles-startIndex + 1);
+    fiducial_in_r = cell(numOfFiles-startIndex + 1, 1);
+    Trinw = zeros(4,4,numOfFiles-startIndex + 1);
     for i = startIndex:numOfFiles
         % For loop through the files in the directory and analyze each file
-        [fiducial_array{i-startIndex + 1}, transformation_mat(:,:,i-startIndex + 1)] = ...
+        [fiducial_in_r{i-startIndex + 1}, Trinw(:,:,i-startIndex + 1)] = ...
             AnalyzeSingleFile(path+filesInDir(i).name,...
             mm_per_pixel, fiducial_in_c, Twinc, options.Recalibrate,...
             options.Robot_Rotation, options.ApproachVector);
     end
 else
     % We are only analyzing a single file
-    [fiducial_array, transformation_mat] = ...
+    [fiducial_in_r, Trinw] = ...
             AnalyzeSingleFile(path,...
             mm_per_pixel, fiducial_in_c, Twinc, options.Recalibrate,...
             options.Robot_Rotation, options.ApproachVector);
 end
 
-fiducial_mat = cell2mat(fiducial_array); % Conver the cell array to a matrix for saving
+fiducial_in_r_mat = cell2mat(fiducial_in_r); % Conver the cell array to a matrix for saving
 % Overwrite current csv file
 try
-    save(options.SaveLocation,'fiducial_array','transformation_mat')
+    save(options.SaveLocation,'fiducial_in_r','Trinw')
 catch
     sprintf("failed save")
 end
 close gcf
 end
 %% Helper Function
-function [fiducial_mat, transformation_mat] = ...
+function [fiducial_in_r, Trinw] = ...
     AnalyzeSingleFile(path, mm_per_pixel, fiducial_in_c, Twinc,...
     recalibrate, robot_rotation, approach_vector)
-fiducial_mat = [];
-transformation_mat = zeros(4,4);
+fiducial_in_r = [];
+Trinw = zeros(4,4);
 try
     % This is in case someone decides the are done analyzing images but
     % doesn't want to lose their progress.
@@ -99,8 +99,8 @@ try
         robot_rotation,'mm_per_pix',mm_per_pixel,...
         'ApproachVector', approach_vector);
     fiducial_pos_r = inv(Ttip_in_c)*[fiducial_in_c;zeros(1,4);ones(1,4)];
-    fiducial_mat = fiducial_pos_r(1:3,:);
-    transformation_mat = inv(Twinc)*Ttip_in_c;
+    fiducial_in_r = fiducial_pos_r(1:3,:);
+    Trinw = inv(Twinc)*Ttip_in_c;
 catch e
     errorMessage = sprintf('Error in function %s() at line %d.\n\nError Message:\n%s', ...
         e.stack(1).name, e.stack(1).line, e.message);
