@@ -18,7 +18,7 @@ switch options.Mode
         Twinct = [R t;0 0 0 1];
 
         Trinct = zeros(4, 4, size(Trinw,3));
-        for i = 1:size(transformation_mat,3) % For loop through all robot transformations
+        for i = 1:size(Trinw,3) % For loop through all robot transformations
             Trinct(:,:,i) = Twinct*Trinw(:,:,i);
         end
     case 'robot_frame'
