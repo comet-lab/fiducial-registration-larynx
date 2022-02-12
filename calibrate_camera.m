@@ -40,8 +40,8 @@ for i = 1:num_fiducials
             % Choose between selecting the 
             case 'points'
                 title(sprintf("Select the corners of the fiducial"));
-                point1 = drawpoint('Color','magenta','Parent',options.ax,'MarkerSize',3);
-                point2 = drawpoint('Color','magenta','Parent',options.ax,'MarkerSize',3);
+                point1 = drawpoint('Color','magenta','Parent',options.ax,'MarkerSize',2);
+                point2 = drawpoint('Color','magenta','Parent',options.ax,'MarkerSize',2);
                 fid_size = abs([point1.Position(1) - point2.Position(1), ...
                             point1.Position(2) - point2.Position(2)]);
                 % Draw a rectangle based on the points selected
@@ -53,7 +53,7 @@ for i = 1:num_fiducials
             case 'rectangle'
                 % Draw rectangle around fiducial
                 rect = drawrectangle('Color','magenta','Parent',options.ax,...
-                    'MarkerSize',2,'LineWidth',1.5,'Rotatable',true);
+                    'MarkerSize',2,'LineWidth',1,'Rotatable',true);
         end
         
         % Perform Satisfaction Check on drawn elements
