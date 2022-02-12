@@ -8,12 +8,12 @@ arguments
     options.SaveLocation = 'robot_in_ct.mat'
 end
 
-load(calibration_data, 'fiducial_pos', 'Twinc')
+load(calibration_data, 'fiducial_in_c', 'Twinc')
 switch options.Mode
     case 'world_frame'
         load(robot_data, 'transformation_mat')
-        fiducial_in_world = inv(Twinc)*fiducial_pos;
-        [R,t,FRE,FREcomponents] = point_register(fiducial_in_world,fiducials_inCT);
+        fiducial_in_world = inv(Twinc)*[fiducial_in_c;zeros(1,size(fiducial_in_c,2));ones(1,size(fiducial_in_c,2))];
+        [R,t,FRE,FREcomponents] = point_register(fiducial_in_world(1:3,:),fiducials_inCT);
 
         Twinct = [R t;0 0 0 1];
 

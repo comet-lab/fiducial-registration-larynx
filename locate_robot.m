@@ -100,6 +100,6 @@ orient = orient./norm(orient);
 theta = rad2deg(atan2(orient(2),orient(1)));
 
 tip_pos = tip_point.Position + start_rect(1:2);
-Ttip_in_c = [rotz(theta), [tip_pos'.*options.mm_per_pix';0]; 0 0 0 1];
+Ttip_in_c = [rotz(theta), [tip_pos'.*options.mm_per_pix;0]; 0 0 0 1];
 Ttip_in_c = Ttip_in_c*[options.Robot_rotation zeros(3,1);zeros(1,3) 1];
 end

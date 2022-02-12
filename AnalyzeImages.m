@@ -31,8 +31,12 @@ arguments
     options.Recalibrate (1,1) logical = false
 end
 %*********************************************
-
-load(calibrationFile,'mm_per_pixel','Twinc','fiducial_in_c');
+mm_per_pixel = 0;
+Twinc = zeros(4,4);
+fiducial_in_c = zeros(3,1);
+if ~options.Recalibrate
+    load(calibrationFile,'mm_per_pixel','Twinc','fiducial_in_c');
+end
 if options.RelativePath
     path = pwd + "\" + path;
     options.SaveLocation = pwd + "\" + options.SaveLocation;
@@ -94,7 +98,7 @@ try
     Ttip_in_c = locate_robot(img,'Robot_rotation',...
         robot_rotation,'mm_per_pix',mm_per_pixel,...
         'ApproachVector', approach_vector);
-    fiducial_pos_r = inv(Ttip_in_c)*[fiducial_in_c';zeros(1,4);ones(1,4)];
+    fiducial_pos_r = inv(Ttip_in_c)*[fiducial_in_c;zeros(1,4);ones(1,4)];
     fiducial_mat = fiducial_pos_r(1:3,:);
     transformation_mat = inv(Twinc)*Ttip_in_c;
 catch e

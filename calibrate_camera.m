@@ -25,9 +25,9 @@ arguments
     options.World_Rotation = eye(3,3);
 end
 
-mm_per_pixel = [0,0];
+mm_per_pixel = [0;0];
 world_pos = zeros(1,2);
-fiducial_in_c = zeros(num_fiducials, 2);
+fiducial_in_c = zeros(2,num_fiducials);
 I = imshow(img,'Parent',options.ax);
 %% Select fiducials with boxes
 title(sprintf("Select Fiducials"));
@@ -72,11 +72,11 @@ for i = 1:num_fiducials
     width = width + (rect.Position(3) - width)/i;
     height = height + (rect.Position(4) - height)/i;
     % locate fiducial locations in pixels
-    fiducial_in_c(i,:) = [rect.Position(1) + rect.Position(3)/2,...
+    fiducial_in_c(:,i) = [rect.Position(1) + rect.Position(3)/2;...
                     rect.Position(2) + rect.Position(4)/2];
 end
 % determine mm_per_pixel value
-mm_per_pixel = [fiducial_size(1)/width, fiducial_size(2)/height];
+mm_per_pixel = [fiducial_size(1)/width; fiducial_size(2)/height];
 fiducial_in_c = fiducial_in_c.*mm_per_pixel; % fiducials in camera frame
 % Delete Fiducials
 for i = 1:size(drawn_objs,1)
@@ -99,7 +99,7 @@ while(1)
     point.delete
 end
 % world frame in camera frame
-Twinc = [options.World_Rotation [world_pos.*mm_per_pixel'; 0]; zeros(1,3) 1];
+Twinc = [options.World_Rotation [world_pos.*mm_per_pixel; 0]; zeros(1,3) 1];
 point.delete
 %% Save values to a mat file
 save(options.save_loc,'mm_per_pixel','Twinc','fiducial_in_c')
