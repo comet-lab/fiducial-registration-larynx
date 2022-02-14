@@ -78,10 +78,6 @@ end
 % determine mm_per_pixel value
 mm_per_pixel = [fiducial_size(1)/width; fiducial_size(2)/height];
 fiducial_in_c = fiducial_in_c.*mm_per_pixel; % fiducials in camera frame
-% Delete Fiducials
-for i = 1:size(drawn_objs,1)
-    drawn_objs{i}.delete
-end
 
 %% Select origin location
 title(sprintf("Select the Origin of the World Reference Frame"));
@@ -100,7 +96,14 @@ while(1)
 end
 % world frame in camera frame
 Twinc = [options.World_Rotation [world_pos.*mm_per_pixel; 0]; zeros(1,3) 1];
+
+%% Cleanup
+% Delete Point
 point.delete
+% Delete Fiducials
+for i = 1:size(drawn_objs,1)
+    drawn_objs{i}.delete
+end
 %% Save values to a mat file
 save(options.save_loc,'mm_per_pixel','Twinc','fiducial_in_c')
 close all
