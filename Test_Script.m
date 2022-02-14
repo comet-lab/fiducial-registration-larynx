@@ -16,17 +16,17 @@ img = imread("Real_test_images\real_world_test.png");
 fiducial_pos_r_2 = inv(Tr_in_c)*[fiducial_pos';zeros(1,4);ones(1,4)]
 
 %% Full RUN
-img = imread("Real_test_images\real_world_test.png");
+% img = imread("Real_test_images\real_world_test.png");
 
-calibrate_camera(img,'Style',...
-    'rectangle','World_Rotation', [1 0 0; 0 -1 0; 0 0 -1]);
+% calibrate_camera(img,'Style',...
+%     'rectangle','World_Rotation', [1 0 0; 0 -1 0; 0 0 -1]);
 
-[fid_results, T_results] = AnalyzeImages("Real_test_images\",'Recalibrate',false,'ApproachVector','tangent')
-
+[fid_results, T_results] = AnalyzeImages("Y:\NIDCD-2020\IROS22\Experiments\Reachability Experiments\Images\",'RelativePath',false,'Recalibrate',true,'ApproachVector','tangent');
 
 load('mesh_fiducials.mat','fiducial_in_mesh');
 Trinct = ToCTPoints(fiducial_in_mesh)
 %%
+close all
 display_anatomy
 display_robot
 %% TESTING
