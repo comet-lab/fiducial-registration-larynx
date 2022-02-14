@@ -78,13 +78,14 @@ while(1)
                 tip_line.Position(2,2) - tip_line.Position(1,2)];
             diff = [-diff(2), diff(1)]; % want normal vector
             end_point = tip_pos(1,:) + diff;
+            tip_line.delete
             approach_vec = drawline('Position', [tip_pos(1,:); end_point],...
                 'Color','magenta','Parent',options.ax,'MarkerSize',3);
         case 'tangent'
             title(sprintf("Draw a line along the laser fiber"));
-            tip_line = drawline('Color','magenta','Parent',options.ax,'MarkerSize',3);
-            diff = [tip_line.Position(2,1) - tip_line.Position(1,1),...
-                tip_line.Position(2,2) - tip_line.Position(1,2)];
+            approach_vec = drawline('Color','magenta','Parent',options.ax,'MarkerSize',3);
+            diff = [approach_vec.Position(2,1) - approach_vec.Position(1,1),...
+                approach_vec.Position(2,2) - approach_vec.Position(1,2)];
     end
     quest = sprintf("Are you happy with your line?");
     satisfied = questdlg(quest,...
@@ -92,7 +93,6 @@ while(1)
     if satisfied == "Yes"
         break; % User is satisfied break out of loop
     end
-    tip_line.delete
     approach_vec.delete
 end
 orient = [diff(1), diff(2)]; % [delta x, delta y] in pixels of the approach vector

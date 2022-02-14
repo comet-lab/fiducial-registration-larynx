@@ -1,4 +1,4 @@
-function Trinct = ToCTPoints(fiducials_inCT, calibration_data, robot_data, options)
+function [Trinct, FRE, FREcomponents] = ToCTPoints(fiducials_inCT, calibration_data, robot_data, options)
 arguments
     fiducials_inCT (3,:) double 
     calibration_data (1,:) char = 'calibration_info.mat'
@@ -14,7 +14,7 @@ switch options.Mode
         load(robot_data, 'Trinw')
         fiducial_in_world = inv(Twinc)*[fiducial_in_c;zeros(1,size(fiducial_in_c,2));ones(1,size(fiducial_in_c,2))];
         [R,t,FRE,FREcomponents] = point_register(fiducial_in_world(1:3,:),fiducials_inCT);
-
+        
         Twinct = [R t;0 0 0 1];
 
         Trinct = zeros(4, 4, size(Trinw,3));
@@ -24,12 +24,16 @@ switch options.Mode
     case 'robot_frame'
         load(robot_data, 'fiducial_in_r')
         Trinct = zeros(4, 4, length(fiducial_in_r));
+        FRE = zeros(1,length(fiducial_in_r));
+        FREcomponents = zeros(3,length(fiducials_inCT),length(fiducial_in_r));
         for i = length(fiducial_in_r)
-            [R,t,FRE,FREcomponents] = point_register(fiducial_in_r{i},fiducials_inCT);
+            [R,t,FRE_temp,FREcomponents_temp] = point_register(fiducial_in_r{i},fiducials_inCT);
+            FRE(:,i) = FRE_temp;
+            FREcomponents(:,:,i) = FREcomponents_temp;
             Trinct(:,:,i) = [R t; 0 0 0 1];
         end
 end
 
-save(options.SaveLocation, 'Trinct')
+save(options.SaveLocation, 'Trinct','FRE','FREcomponents')
 
 end
