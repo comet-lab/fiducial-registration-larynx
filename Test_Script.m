@@ -28,7 +28,7 @@ Trinct = ToCTPoints(fiducial_in_mesh)
 %%
 close all
 display_anatomy
-display_robot
+display_robot('DisplayFiducials',true)
 %% TESTING
 known_fiducial_pos = [20 20; 70 35; 160 25; 50 100; 105 85; 140 110];
 known_fiducial_pos = known_fiducial_pos + [2.5 2.5];
