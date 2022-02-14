@@ -28,7 +28,7 @@ load('mesh_fiducials.mat','fiducial_in_mesh');
 Trinct = ToCTPoints(fiducial_in_mesh)
 %%
 display_anatomy
-robotRef = triad('matrix', Trinct, 'Scale', 4, 'linewidth', 2);
+display_robot
 %% TESTING
 known_fiducial_pos = [20 20; 70 35; 160 25; 50 100; 105 85; 140 110];
 known_fiducial_pos = known_fiducial_pos + [2.5 2.5];
